@@ -31,9 +31,4 @@ router.put(
     usuarioController.atualizar
 );
 
-router.patch(
-    '/:id',
-    usuarioController.atualizarParcial
-);
-
 module.exports = router;

@@ -1,5 +1,5 @@
 const conectarBanco = require('../config/database');
-const { ObjectId } = require('mongodb')
+const { ObjectId } = require('mongodb');
 
 
 async function obterColecao() {
@@ -69,26 +69,21 @@ async function excluir(id) {
     return resultado;
 }
 
-async function atualizar(id, nome, idade) {
+async function atualizar(id, nome, nomePerfil, cpf) {
     
     const colecao = await obterColecao();
     const resultado = await colecao.updateOne(
         {_id: new ObjectId(id)},
-        {$set: { nome: nome, idade: Number(idade) }}
+        {$set: { nome: nome, 
+                nomePerfil: nomePerfil,
+                cpf: cpf
+         }
+        }
     );
     return resultado;
 }
 
-async function atualizarParcial(id, nome, idade) {
-    
-    const colecao = await obterColecao();
-    const resultado = await colecao.updateOne(
-        {_id: new ObjectId(id)},
-        { $set: { idade : Number(idade)}}
-    );
-    return resultado;
 
-}
 
 module.exports = {
     listar,
@@ -96,6 +91,5 @@ module.exports = {
     buscarPorId,
     criar,
     excluir,
-    atualizar,
-    atualizarParcial
+    atualizar
 };

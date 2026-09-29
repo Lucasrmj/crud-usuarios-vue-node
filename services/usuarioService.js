@@ -42,39 +42,28 @@ async function excluir(id) {
     }
 }
 
-async function atualizar(id, nome, idade) {
-    if (!nome || !idade) {
-        throw new Error('Nome e idade são obrigatórios');
+async function atualizar(id, nome, nomePerfil, cpf) {
+    if (!nome || !nomePerfil || !cpf) {
+        throw new Error('Nome, nome de perfil e cpf são obrigatórios');
     }
 
     const resultado = await usuarioRepository.atualizar(
         id,
         nome,
-        idade
+        nomePerfil,
+        cpf
     );
 
-    if (!resultado) {
+    if (resultado.matchedCount === 0) {
         throw new Error('Usuario nao encontrado!');
     }
 }
 
-async function atualizarParcial(id, nome, idade) {
-    const resultado = await usuarioRepository.atualizarParcial(
-        id,
-        nome,
-        idade
-    );
-
-    if (!resultado) {
-        throw new Error('Usuario nao encontrado!');
-    }
-}
 
 module.exports = {
     listar,
     buscarPorId,
     criar,
     excluir,
-    atualizar,
-    atualizarParcial
+    atualizar
 };

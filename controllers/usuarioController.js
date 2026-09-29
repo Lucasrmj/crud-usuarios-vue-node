@@ -55,21 +55,21 @@ async function criar(req, res) {
 
 
 async function atualizar(req, res) {
-    const id = req.params.id;
-    const nome = req.body.nome;
-    const idade = req.body.idade;
+    const {id} = req.params;
+    const {nome, nomePerfil, cpf} = req.body;
 
     try {
         await usuarioService.atualizar(
             id,
             nome,
-            idade
+            nomePerfil,
+            cpf
         );
 
-        res.send('Usuario atualizado com sucesso');
+        return res.status(200).send('Usuario atualizado com sucesso');
     } catch (erro) {
 
-        if (erro.message === 'Nome e idade são obrigatórios') {
+        if (erro.message.includes('obrigatórios')) {
             res.status(400).send(erro.message);
         } else {
             res.status(404).send(erro.message);
@@ -77,30 +77,12 @@ async function atualizar(req, res) {
     }
 }
 
-async function atualizarParcial(req, res) {
-    const id = req.params.id;
 
-    const nome = req.body.nome;
-    const idade = req.body.idade;
-
-    try {
-        await usuarioService.atualizarParcial(
-            id,
-            nome,
-            idade
-        );
-
-        res.send('Usuario atualizado com sucesso');
-    } catch (erro) {
-        res.status(404).send(erro.message);
-    }
-}
 
 module.exports = {
     listar,
     listarId,
     criar,
     excluir,
-    atualizar,
-    atualizarParcial
+    atualizar
 };
