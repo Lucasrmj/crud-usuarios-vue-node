@@ -1,9 +1,18 @@
 const usuarioRepository = require('../repositories/usuarioRepository');
 
-async function listar() {
-    const resultado = await usuarioRepository.listar();
+async function listar(nome) {
 
-    return resultado;
+    if (nome) {
+
+        const resultado = await usuarioRepository.buscarPorNome(nome);
+        return resultado;
+
+    } 
+    else {
+        const resultado = await usuarioRepository.listar();
+        return resultado;
+    }
+
 }
 
 async function buscarPorId(id) {
@@ -16,13 +25,12 @@ async function buscarPorId(id) {
     return usuario;
 }
 
-async function criar(nome, idade) {
-    if (!nome || !idade) {
-        throw new Error('Nome e idade são obrigatórios');
+async function criar(nome, nomePerfil, cpf) {
+    if (!nome || !nomePerfil) {
+        throw new Error('Nome, cpf e nome de perfil são obrigatórios');
     }
 
-    const usuario = await usuarioRepository.criar(nome, idade);
-
+    const usuario = await usuarioRepository.criar(nome, nomePerfil, cpf );
     return usuario;
 }
 

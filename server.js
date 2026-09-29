@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const conectarBanco = require('./config/database');
 
 const app = express();
 
@@ -15,6 +16,11 @@ app.use(
     usuariosRoutes
 );
 
-app.listen(3000, () => {
-    console.log('Servidor rodando na porta 3000');
+app.listen(3000, async () => {
+    try{
+        await conectarBanco()/
+        console.log('Servidor rodando na porta 3000');
+    }catch(erro){
+        console.error('Falha ao conectar ao mongoDB', erro.message);
+    }
 });

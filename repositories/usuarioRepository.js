@@ -1,73 +1,98 @@
-const conexao = require('../config/database');
+const conectarBanco = require('../config/database');
+const { ObjectId } = require('mongodb')
 
-async function listar() {
-    const [resultado] = await conexao.query(
-        'SELECT * FROM usuarios'
-    );
 
-    return resultado;
+async function obterColecao() {
+    const db = await conectarBanco();
+    return db.collection('usuarios')
+    
+}
+
+async function buscarPorNome(nome) {
+  const colecao = await obterColecao();
+
+  const usuarios = await colecao.aggregate([
+    {
+      $search: {
+        index: 'default', 
+        autocomplete: {
+          query: nome,
+          path: 'nome',
+          fuzzy: {
+            maxEdits: 1 
+          }
+        }
+      }
+    }
+  ]).toArray();
+
+  return usuarios;
+}
+
+async function listar(idade) {
+
+    const colecao = await obterColecao();
+    const filtro = {};
+
+    if (idade){
+        filtro.idade = Number(idade);
+    }
+
+    const usuarios = await colecao.find(filtro).toArray();
+    return usuarios;
+    
 }
 
 async function buscarPorId(id) {
-    const [resultado] = await conexao.query(
-        'SELECT * FROM usuarios WHERE id = ?',
-        [id]
-    );
-
-    return resultado[0];
+  const colecao = await obterColecao();
+  const usuario = await colecao.findOne({ _id: new ObjectId(id) });
+  return usuario;
 }
 
-async function criar(nome, idade) {
-    const [resultado] = await conexao.query(
-        'INSERT INTO usuarios (nome, idade) VALUES (?, ?)',
-        [nome, idade]
-    );
-
-    return {
-        id: resultado.insertId,
+async function criar(nome, nomePerfil, cpf) {
+    
+    const colecao = await obterColecao();
+    const novoUsuario ={
         nome: nome,
-        idade: idade
+        nomePerfil: nomePerfil,
+        cpf: cpf
+    
     };
+    const resultado = await colecao.insertOne(novoUsuario);
+    return resultado;
 }
 
 async function excluir(id) {
-    const [resultado] = await conexao.query(
-        'DELETE FROM usuarios WHERE id = ?',
-        [id]
-    );
-
-    return resultado.affectedRows > 0;
+    
+    const colecao = await obterColecao();
+    const resultado = await colecao.deleteOne({ _id: new ObjectId(id) });
+    return resultado;
 }
 
 async function atualizar(id, nome, idade) {
-    const [resultado] = await conexao.query(
-        'UPDATE usuarios SET nome = ?, idade = ? WHERE id = ?',
-        [nome, idade, id]
+    
+    const colecao = await obterColecao();
+    const resultado = await colecao.updateOne(
+        {_id: new ObjectId(id)},
+        {$set: { nome: nome, idade: Number(idade) }}
     );
-
-    return resultado.affectedRows > 0;
+    return resultado;
 }
 
 async function atualizarParcial(id, nome, idade) {
-    const usuario = await buscarPorId(id);
-
-    if (!usuario) {
-        return false;
-    }
-
-    const novoNome = nome !== undefined ? nome : usuario.nome;
-    const novaIdade = idade !== undefined ? idade : usuario.idade;
-
-    const [resultado] = await conexao.query(
-        'UPDATE usuarios SET nome = ?, idade = ? WHERE id = ?',
-        [novoNome, novaIdade, id]
+    
+    const colecao = await obterColecao();
+    const resultado = await colecao.updateOne(
+        {_id: new ObjectId(id)},
+        { $set: { idade : Number(idade)}}
     );
+    return resultado;
 
-    return resultado.affectedRows > 0;
 }
 
 module.exports = {
     listar,
+    buscarPorNome,
     buscarPorId,
     criar,
     excluir,
