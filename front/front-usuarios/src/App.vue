@@ -1,3 +1,4 @@
+```vue
 <script setup>
 import { ref, onMounted } from 'vue'
 
@@ -27,11 +28,7 @@ async function cadastrar() {
     })
   })
 
-  idEditando.value = null
-  nome.value = ''
-  nomePerfil.value = ''
-  cpf.value = ''
-
+  cancelarEdicao()
   await carregarUsuarios()
 }
 
@@ -63,59 +60,155 @@ function editarUsuario(usuario) {
   cpf.value = usuario.cpf
 }
 
+function cancelarEdicao() {
+  idEditando.value = null
+  nome.value = ''
+  nomePerfil.value = ''
+  cpf.value = ''
+}
+
 onMounted(() => {
   carregarUsuarios()
 })
 </script>
 
 <template>
-  <div>
-    <h1>Cadastro de usuários</h1>
+  <div class="container">
 
-    <label>Nome:</label>
-    <input type="text" v-model="nome">
-    <br>
+    <header class="header">
+      <h1>Cadastro de usuários</h1>
+      <p>Gerencie os usuários cadastrados</p>
+    </header>
 
-    <label>Nome do Perfil:</label>
-    <input type="text" v-model="nomePerfil">
-    <br>
+    <div class="content-grid">
 
-    <label>CPF:</label>
-    <input type="text" v-model="cpf">
-    <br>
+      <!-- Formulário -->
+      <div class="card">
 
-    <button @click="cadastrar">
-      {{ idEditando ? 'Salvar alteração' : 'Cadastrar' }}
-    </button>
+        <h2>
+          {{ idEditando ? 'Editar usuário' : 'Cadastrar usuário' }}
+        </h2>
 
-    <h3>Buscar</h3>
+        <div class="form-group">
+          <label>Nome:</label>
+          <input type="text" v-model="nome">
+        </div>
 
-    <input type="text" v-model="nomeFiltro">
-    <br>
+        <div class="form-group">
+          <label>Nome do Perfil:</label>
+          <input type="text" v-model="nomePerfil">
+        </div>
 
-    <button @click="carregarUsuarios">
-      Buscar
-    </button>
+        <div class="form-group">
+          <label>CPF:</label>
+          <input type="text" v-model="cpf">
+        </div>
 
-    <h2>Usuários cadastrados</h2>
+        <div class="actions">
 
-    <div v-if="usuarios.length > 0">
-      <div v-for="usuario in usuarios" :key="usuario._id">
-        <p>
-          {{ usuario.nome }} <br>
-          {{ usuario.nomePerfil }} <br>
-          {{ usuario.cpf }}
-        </p>
+          <button class="btn-primary" @click="cadastrar">
+            {{ idEditando ? 'Salvar alteração' : 'Cadastrar' }}
+          </button>
 
-        <button @click="excluirUsuario(usuario._id)">
-          Excluir
-        </button>
+          <button
+            v-if="idEditando"
+            class="btn-secondary"
+            @click="cancelarEdicao"
+          >
+            Cancelar
+          </button>
 
-        <button @click="editarUsuario(usuario)">
-          Editar
-        </button>
+        </div>
+
       </div>
+
+      <!-- Lista de usuários -->
+      <div class="card">
+
+        <h2>Usuários cadastrados</h2>
+
+        <div class="search-bar">
+
+          <input
+            type="text"
+            v-model="nomeFiltro"
+            placeholder="Buscar por nome..."
+          >
+
+          <button class="btn-search" @click="carregarUsuarios">
+            Buscar
+          </button>
+
+        </div>
+
+        <div v-if="usuarios.length > 0" class="table-wrapper">
+
+          <table class="user-table">
+
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Perfil</th>
+                <th>CPF</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr
+                v-for="usuario in usuarios"
+                :key="usuario._id"
+              >
+
+                <td class="font-bold">
+                  {{ usuario.nome }}
+                </td>
+
+                <td>
+                  <span class="badge">
+                    {{ usuario.nomePerfil }}
+                  </span>
+                </td>
+
+                <td>
+                  {{ usuario.cpf }}
+                </td>
+
+                <td class="actions-cell">
+
+                  <button
+                    class="btn-action"
+                    @click="editarUsuario(usuario)"
+                  >
+                    Editar
+                  </button>
+
+                  <button
+                    class="btn-delete"
+                    @click="excluirUsuario(usuario._id)"
+                  >
+                    Excluir
+                  </button>
+
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+        <div v-else class="empty-state">
+          Nenhum usuário encontrado.
+        </div>
+
+      </div>
+
     </div>
+
   </div>
 </template>
-
+```

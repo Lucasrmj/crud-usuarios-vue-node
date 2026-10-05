@@ -26,7 +26,7 @@ async function buscarPorId(id) {
 }
 
 async function criar(nome, nomePerfil, cpf) {
-    if (!nome || !nomePerfil) {
+    if (!nome || !nomePerfil || !cpf) {
         throw new Error('Nome, cpf e nome de perfil são obrigatórios');
     }
 

@@ -18,7 +18,7 @@ app.use(
 
 app.listen(3000, async () => {
     try{
-        await conectarBanco()/
+        await conectarBanco()
         console.log('Servidor rodando na porta 3000');
     }catch(erro){
         console.error('Falha ao conectar ao mongoDB', erro.message);
